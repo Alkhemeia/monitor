@@ -804,6 +804,35 @@ class ColorMonitorApp:
 
         # --- RIGHT COLUMN WIDGETS ---
 
+        # Live Preview & Logs card
+        outputs_card = ttk.Frame(right_col, style='Card.TFrame', padding=15)
+        outputs_card.pack(fill="both", expand=True, pady=5)
+        
+        preview_panel = ttk.Frame(outputs_card, style='Card.TFrame')
+        preview_panel.pack(side="left", fill="both", padx=(0, 10))
+        
+        self.lbl_preview = ttk.Label(preview_panel, text="Live-Vorschau", font=self.header_font, style='Card.TLabel')
+        self.lbl_preview.pack(anchor="n", pady=(0, 5))
+        
+        self.preview_canvas = tk.Canvas(preview_panel, width=160, height=160, bg="#181825", highlightthickness=1, highlightbackground="#313244")
+        self.preview_canvas.pack(padx=5, pady=5)
+        
+        self.match_stats_lbl = ttk.Label(preview_panel, text="Übereinstimmung: 0.0%", font=self.body_font, style='Card.TLabel', foreground="#a6adc8")
+        self.match_stats_lbl.pack(pady=2)
+        
+        self.gauge_canvas = tk.Canvas(preview_panel, width=160, height=12, bg="#313244", highlightthickness=0)
+        self.gauge_canvas.pack(pady=5)
+        
+        log_panel = ttk.Frame(outputs_card, style='Card.TFrame')
+        log_panel.pack(side="left", fill="both", expand=True, padx=(10, 0))
+        
+        self.lbl_log = ttk.Label(log_panel, text="Aktivitätsprotokoll", font=self.header_font, style='Card.TLabel')
+        self.lbl_log.pack(anchor="w", pady=(0, 5))
+        
+        self.log_list = tk.Listbox(log_panel, bg="#11111b", fg="#cdd6f4", selectbackground="#313244", 
+                                   font=self.code_font, height=10, relief="flat", highlightthickness=0)
+        self.log_list.pack(fill="both", expand=True)
+
         # Automatisierungs-Makro bei Alarm
         macro_card = ttk.Frame(right_col, style='Card.TFrame', padding=15)
         macro_card.pack(fill="x", pady=5)
@@ -892,34 +921,7 @@ class ColorMonitorApp:
         self.btn_zone_down = ttk.Button(zones_btns_r2, text="🔽 Nach unten", width=12, command=self.move_zone_down)
         self.btn_zone_down.pack(side="left", padx=4)
 
-        # 6. Live Preview & Logs card
-        outputs_card = ttk.Frame(right_col, style='Card.TFrame', padding=15)
-        outputs_card.pack(fill="both", expand=True, pady=5)
-        
-        preview_panel = ttk.Frame(outputs_card, style='Card.TFrame')
-        preview_panel.pack(side="left", fill="both", padx=(0, 10))
-        
-        self.lbl_preview = ttk.Label(preview_panel, text="Live-Vorschau", font=self.header_font, style='Card.TLabel')
-        self.lbl_preview.pack(anchor="n", pady=(0, 5))
-        
-        self.preview_canvas = tk.Canvas(preview_panel, width=160, height=160, bg="#181825", highlightthickness=1, highlightbackground="#313244")
-        self.preview_canvas.pack(padx=5, pady=5)
-        
-        self.match_stats_lbl = ttk.Label(preview_panel, text="Übereinstimmung: 0.0%", font=self.body_font, style='Card.TLabel', foreground="#a6adc8")
-        self.match_stats_lbl.pack(pady=2)
-        
-        self.gauge_canvas = tk.Canvas(preview_panel, width=160, height=12, bg="#313244", highlightthickness=0)
-        self.gauge_canvas.pack(pady=5)
-        
-        log_panel = ttk.Frame(outputs_card, style='Card.TFrame')
-        log_panel.pack(side="left", fill="both", expand=True, padx=(10, 0))
-        
-        self.lbl_log = ttk.Label(log_panel, text="Aktivitätsprotokoll", font=self.header_font, style='Card.TLabel')
-        self.lbl_log.pack(anchor="w", pady=(0, 5))
-        
-        self.log_list = tk.Listbox(log_panel, bg="#11111b", fg="#cdd6f4", selectbackground="#313244", 
-                                   font=self.code_font, height=10, relief="flat", highlightthickness=0)
-        self.log_list.pack(fill="both", expand=True)
+
 
     def get_hex_color(self, rgb_tuple):
         return f"#{rgb_tuple[0]:02x}{rgb_tuple[1]:02x}{rgb_tuple[2]:02x}"
