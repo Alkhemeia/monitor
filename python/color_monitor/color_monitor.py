@@ -757,12 +757,45 @@ class ColorMonitorApp:
         log_panel = ttk.Frame(outputs_card, style='Card.TFrame')
         log_panel.pack(side="left", fill="both", expand=True, padx=(10, 0))
         
-        self.lbl_log = ttk.Label(log_panel, text="Aktivitätsprotokoll", font=self.header_font, style='Card.TLabel')
-        self.lbl_log.pack(anchor="w", pady=(0, 5))
+        log_header_frame = ttk.Frame(log_panel, style='Card.TFrame')
+        log_header_frame.pack(fill="x", pady=(0, 5))
         
-        self.log_list = tk.Listbox(log_panel, bg="#11111b", fg="#cdd6f4", selectbackground="#313244", 
-                                   font=self.code_font, height=10, relief="flat", highlightthickness=0)
-        self.log_list.pack(fill="both", expand=True)
+        self.lbl_log = ttk.Label(log_header_frame, text="Aktivitätsprotokoll", font=self.header_font, style='Card.TLabel')
+        self.lbl_log.pack(side="left", anchor="w")
+        
+        self.btn_copy_log = ttk.Button(log_header_frame, text="Kopieren", style='TButton', command=self.copy_all_logs, width=8)
+        self.btn_copy_log.pack(side="right")
+        
+        log_list_frame = ttk.Frame(log_panel, style='Card.TFrame')
+        log_list_frame.pack(fill="both", expand=True)
+        
+        scrollbar_y = ttk.Scrollbar(log_list_frame, orient="vertical")
+        scrollbar_x = ttk.Scrollbar(log_list_frame, orient="horizontal")
+        
+        self.log_list = tk.Listbox(log_list_frame, bg="#11111b", fg="#cdd6f4", selectbackground="#313244", 
+                                   font=self.code_font, height=10, relief="flat", highlightthickness=0,
+                                   yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set,
+                                   selectmode="extended")
+        
+        scrollbar_y.config(command=self.log_list.yview)
+        scrollbar_x.config(command=self.log_list.xview)
+        
+        scrollbar_y.pack(side="right", fill="y")
+        scrollbar_x.pack(side="bottom", fill="x")
+        self.log_list.pack(side="left", fill="both", expand=True)
+        
+        self.log_list.bind("<Control-c>", self.copy_selected_log)
+        self.log_list.bind("<Control-C>", self.copy_selected_log)
+        
+        self.log_context_menu = tk.Menu(self.root, tearoff=0, bg="#181825", fg="#cdd6f4", activebackground="#313244", activeforeground="#cdd6f4", relief="flat")
+        self.log_context_menu.add_command(label="Kopieren (Auswahl)", command=self.copy_selected_log)
+        self.log_context_menu.add_command(label="Alles kopieren", command=self.copy_all_logs)
+        
+        def show_log_context(event):
+            self.log_context_menu.post(event.x_root, event.y_root)
+            
+        self.log_list.bind("<Button-3>", show_log_context)
+
 
         # Trigger Settings Card (Merged Target Color, Tolerance, and Trigger settings)
         trigger_settings_card = ttk.Frame(right_col, style='Card.TFrame', padding=15)
@@ -1373,6 +1406,31 @@ class ColorMonitorApp:
                 self.log_list.delete(100, tk.END)
         except:
             pass
+
+    def copy_selected_log(self, event=None):
+        try:
+            selected_indices = self.log_list.curselection()
+            if selected_indices:
+                selected_lines = [self.log_list.get(idx) for idx in selected_indices]
+                text_to_copy = "\n".join(selected_lines)
+                if text_to_copy:
+                    self.root.clipboard_clear()
+                    self.root.clipboard_append(text_to_copy)
+                    self.root.update()
+        except:
+            pass
+
+    def copy_all_logs(self):
+        try:
+            all_lines = self.log_list.get(0, tk.END)
+            text_to_copy = "\n".join(all_lines)
+            if text_to_copy:
+                self.root.clipboard_clear()
+                self.root.clipboard_append(text_to_copy)
+                self.root.update()
+        except:
+            pass
+
 
     def update_live_preview(self):
         w = abs(self.x2 - self.x1)
