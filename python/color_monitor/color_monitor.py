@@ -938,14 +938,17 @@ class ColorMonitorApp:
         control_frame = ttk.Frame(main_col, style='Card.TFrame', padding=10)
         control_frame.pack(fill="x", pady=5)
         
-        self.start_btn = ttk.Button(control_frame, text="▶️ Starten", style='Primary.TButton', command=self.toggle_monitoring)
-        self.start_btn.pack(side="left", fill="x", expand=True, ipady=4, padx=(0, 2))
+        btn_container = ttk.Frame(control_frame, style='Card.TFrame')
+        btn_container.pack(anchor="center")
         
-        self.pause_btn = ttk.Button(control_frame, text="⏸️ Pause", style='Secondary.TButton', command=self.toggle_pause, state="disabled")
-        self.pause_btn.pack(side="left", fill="x", expand=True, ipady=4, padx=(2, 2))
+        self.start_btn = ttk.Button(btn_container, text="▶️ Starten", style='Primary.TButton', command=self.toggle_monitoring, width=15)
+        self.start_btn.pack(side="left", ipady=4, padx=5)
         
-        self.restart_btn = ttk.Button(control_frame, text="🔄 Neustart", style='Secondary.TButton', command=self.restart_monitoring)
-        self.restart_btn.pack(side="left", fill="x", expand=True, ipady=4, padx=(2, 0))
+        self.pause_btn = ttk.Button(btn_container, text="⏸️ Pause", style='Secondary.TButton', command=self.toggle_pause, state="disabled", width=15)
+        self.pause_btn.pack(side="left", ipady=4, padx=5)
+        
+        self.restart_btn = ttk.Button(btn_container, text="🔄 Neustart", style='Secondary.TButton', command=self.restart_monitoring, width=15)
+        self.restart_btn.pack(side="left", ipady=4, padx=5)
 
 
     def get_hex_color(self, rgb_tuple):
