@@ -699,11 +699,12 @@ class ColorMonitorApp:
         
         self.zones_listbox.bind("<<ListboxSelect>>", self.on_zone_selected)
         self.zones_listbox.bind("<Double-Button-1>", self.rename_zone)
+        self.zones_listbox.bind("<space>", self.toggle_zone_enabled)
         
         zones_right = ttk.Frame(zones_content, style='Card.TFrame')
         zones_right.pack(side="right", fill="y", padx=(10, 0))
         
-        # Align buttons inside a 3-row grid (2 columns wide) on the right side of the listbox to save horizontal space
+        # Align buttons inside a 3-row grid (2 columns wide) on the right side of the listbox
         self.btn_add_zone = ttk.Button(zones_right, text="➕ Hinzufügen", width=12, command=self.add_zone)
         self.btn_add_zone.grid(row=0, column=0, padx=2, pady=2, sticky="ew")
         
@@ -713,11 +714,14 @@ class ColorMonitorApp:
         self.btn_rename_zone = ttk.Button(zones_right, text="✏️ Umbenennen", width=12, command=self.rename_zone)
         self.btn_rename_zone.grid(row=1, column=0, padx=2, pady=2, sticky="ew")
         
+        self.btn_toggle_zone = ttk.Button(zones_right, text="🔘 Ein/Aus", width=12, command=self.toggle_zone_enabled)
+        self.btn_toggle_zone.grid(row=1, column=1, padx=2, pady=2, sticky="ew")
+        
         self.btn_zone_up = ttk.Button(zones_right, text="🔼 Nach oben", width=12, command=self.move_zone_up)
-        self.btn_zone_up.grid(row=1, column=1, padx=2, pady=2, sticky="ew")
+        self.btn_zone_up.grid(row=2, column=0, padx=2, pady=2, sticky="ew")
         
         self.btn_zone_down = ttk.Button(zones_right, text="🔽 Nach unten", width=12, command=self.move_zone_down)
-        self.btn_zone_down.grid(row=2, column=0, columnspan=2, padx=2, pady=2, sticky="ew")
+        self.btn_zone_down.grid(row=2, column=1, padx=2, pady=2, sticky="ew")
 
 
 
@@ -1027,6 +1031,26 @@ class ColorMonitorApp:
             self.load_zone_to_editor(self.selected_zone_idx)
             self.save_config()
             self.profile_modified = True
+
+    def toggle_zone_enabled(self, event=None):
+        selected_idx = self.zones_listbox.curselection()
+        if not selected_idx:
+            return "break" if event else None
+        idx = selected_idx[0]
+        zone = self.zones[idx]
+        zone["enabled"] = not zone.get("enabled", True)
+        
+        self.update_zones_listbox_item(idx)
+        
+        # If the toggled zone is currently active, sync the checkbutton
+        if idx == self.selected_zone_idx:
+            self._updating_editor = True
+            self.zone_active_var.set(zone["enabled"])
+            self._updating_editor = False
+            
+        self.save_config()
+        self.profile_modified = True
+        return "break"
 
     def rename_zone(self, event=None):
         if event:
