@@ -724,24 +724,31 @@ class ColorMonitorApp:
         self.trig_title = ttk.Label(trigger_settings_card, text="Auslöser Einstellungen", font=self.header_font, style='Card.TLabel')
         self.trig_title.pack(anchor="w", pady=(0, 10))
         
-        # Live Preview section inside Trigger Settings
-        preview_container = ttk.Frame(trigger_settings_card, style='Card.TFrame')
-        preview_container.pack(fill="x", pady=(0, 10))
+        # Internals structured as two columns inside trigger_settings_card
+        card_content = ttk.Frame(trigger_settings_card, style='Card.TFrame')
+        card_content.pack(fill="x", expand=True)
         
-        self.lbl_preview = ttk.Label(preview_container, text="Live-Vorschau", font=self.header_font, style='Card.TLabel')
+        card_left = ttk.Frame(card_content, style='Card.TFrame')
+        card_left.pack(side="left", fill="both", expand=True, padx=(0, 15))
+        
+        card_right = ttk.Frame(card_content, style='Card.TFrame')
+        card_right.pack(side="right", fill="y", padx=(15, 0), anchor="n")
+        
+        # Live Preview (right side)
+        self.lbl_preview = ttk.Label(card_right, text="Live-Vorschau", font=self.header_font, style='Card.TLabel')
         self.lbl_preview.pack(anchor="n", pady=(0, 5))
         
-        self.preview_canvas = tk.Canvas(preview_container, width=160, height=160, bg="#181825", highlightthickness=1, highlightbackground="#313244")
+        self.preview_canvas = tk.Canvas(card_right, width=160, height=160, bg="#181825", highlightthickness=1, highlightbackground="#313244")
         self.preview_canvas.pack(padx=5, pady=5)
         
-        self.match_stats_lbl = ttk.Label(preview_container, text="Übereinstimmung: 0.0%", font=self.body_font, style='Card.TLabel', foreground="#a6adc8")
+        self.match_stats_lbl = ttk.Label(card_right, text="Übereinstimmung: 0.0%", font=self.body_font, style='Card.TLabel', foreground="#a6adc8")
         self.match_stats_lbl.pack(pady=2)
         
-        self.gauge_canvas = tk.Canvas(preview_container, width=160, height=12, bg="#313244", highlightthickness=0)
+        self.gauge_canvas = tk.Canvas(card_right, width=160, height=12, bg="#313244", highlightthickness=0)
         self.gauge_canvas.pack(pady=5)
-
         
-        col_controls = ttk.Frame(trigger_settings_card, style='Card.TFrame')
+        # Color Controls Sub-Frame (left side)
+        col_controls = ttk.Frame(card_left, style='Card.TFrame')
         col_controls.pack(fill="x", pady=(0, 5))
         
         self.color_patch = tk.Canvas(col_controls, width=44, height=44, bg=self.get_hex_color(self.target_color), 
@@ -755,7 +762,7 @@ class ColorMonitorApp:
                                         font=self.code_font, style='Card.TLabel')
         self.color_text_lbl.pack(anchor="w")
         
-        color_btns_frame = ttk.Frame(trigger_settings_card, style='Card.TFrame')
+        color_btns_frame = ttk.Frame(card_left, style='Card.TFrame')
         color_btns_frame.pack(fill="x", pady=(5, 0))
         
         self.color_pick_btn = ttk.Button(color_btns_frame, text="Farbpalette", command=self.choose_color_dialog)
@@ -764,7 +771,7 @@ class ColorMonitorApp:
         self.eyedropper_btn = ttk.Button(color_btns_frame, text="Pipette (Bildschirm)", command=self.start_eyedropper)
         self.eyedropper_btn.pack(side="left", padx=4)
         
-        tolerance_frame = ttk.Frame(trigger_settings_card, style='Card.TFrame')
+        tolerance_frame = ttk.Frame(card_left, style='Card.TFrame')
         tolerance_frame.pack(fill="x", pady=(10, 10))
         
         tol_lbl_container = ttk.Frame(tolerance_frame, style='Card.TFrame')
@@ -783,7 +790,7 @@ class ColorMonitorApp:
         tol_slider.pack(fill="x", pady=(5, 0))
         tol_slider.bind("<ButtonRelease-1>", lambda e: self.save_config())
         
-        trig_grid = ttk.Frame(trigger_settings_card, style='Card.TFrame')
+        trig_grid = ttk.Frame(card_left, style='Card.TFrame')
         trig_grid.pack(fill="x", pady=(10, 0))
         
         self.mode_lbl = ttk.Label(trig_grid, text="Auslöser-Modus:", font=self.body_font, style='Card.TLabel')
@@ -842,6 +849,7 @@ class ColorMonitorApp:
         self.zone_active_cb.grid(row=3, column=1, sticky="w", pady=10)
         
         trig_grid.columnconfigure(1, weight=1)
+
 
         # 6. Automatisierungs-Makro bei Alarm
         macro_card = ttk.Frame(main_col, style='Card.TFrame', padding=15)
