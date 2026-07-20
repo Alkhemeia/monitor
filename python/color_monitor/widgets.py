@@ -18,7 +18,6 @@ class ActionDialog:
         self.win.geometry("380x365")
         self.win.resizable(False, False)
         self.win.transient(self.parent)
-        self.win.grab_set()
         
         self.win.configure(bg="#1e1e2e")
         
@@ -138,6 +137,7 @@ class ActionDialog:
                 self.ntfy_message.set(action_data.get("message", ""))
                 
         self.show_fields()
+        self.win.grab_set()
         
     def on_type_changed(self, event):
         self.show_fields()
