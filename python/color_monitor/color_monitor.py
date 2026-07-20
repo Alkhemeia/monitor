@@ -542,9 +542,9 @@ class ColorMonitorApp:
             self.canvas.update_idletasks()
         container.bind("<Configure>", _configure_container)
         
-        # Adjust container width/height when canvas size changes (min width 980 to prevent squishing)
+        # Adjust container width/height when canvas size changes (min width 580 to prevent squishing)
         def _configure_canvas(event):
-            w = max(event.width, 980)
+            w = max(event.width, 580)
             self.canvas.itemconfig(self.canvas_window, width=w)
             self.canvas.update_idletasks()
         self.canvas.bind("<Configure>", _configure_canvas)
