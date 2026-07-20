@@ -623,21 +623,6 @@ class ColorMonitorApp:
         self.btn_del_prof = ttk.Button(prof_row2, text="Löschen", command=self.delete_profile_btn)
         self.btn_del_prof.pack(side="left", padx=4)
 
-        # 2. Live Preview card
-        preview_card = ttk.Frame(main_col, style='Card.TFrame', padding=15)
-        preview_card.pack(fill="x", pady=5)
-        
-        self.lbl_preview = ttk.Label(preview_card, text="Live-Vorschau", font=self.header_font, style='Card.TLabel')
-        self.lbl_preview.pack(anchor="n", pady=(0, 5))
-        
-        self.preview_canvas = tk.Canvas(preview_card, width=160, height=160, bg="#181825", highlightthickness=1, highlightbackground="#313244")
-        self.preview_canvas.pack(padx=5, pady=5)
-        
-        self.match_stats_lbl = ttk.Label(preview_card, text="Übereinstimmung: 0.0%", font=self.body_font, style='Card.TLabel', foreground="#a6adc8")
-        self.match_stats_lbl.pack(pady=2)
-        
-        self.gauge_canvas = tk.Canvas(preview_card, width=160, height=12, bg="#313244", highlightthickness=0)
-        self.gauge_canvas.pack(pady=5)
 
         # 3. Zonen auswählen Card
         region_card = ttk.Frame(main_col, style='Card.TFrame', padding=15)
@@ -738,6 +723,23 @@ class ColorMonitorApp:
         
         self.trig_title = ttk.Label(trigger_settings_card, text="Auslöser Einstellungen", font=self.header_font, style='Card.TLabel')
         self.trig_title.pack(anchor="w", pady=(0, 10))
+        
+        # Live Preview section inside Trigger Settings
+        preview_container = ttk.Frame(trigger_settings_card, style='Card.TFrame')
+        preview_container.pack(fill="x", pady=(0, 10))
+        
+        self.lbl_preview = ttk.Label(preview_container, text="Live-Vorschau", font=self.header_font, style='Card.TLabel')
+        self.lbl_preview.pack(anchor="n", pady=(0, 5))
+        
+        self.preview_canvas = tk.Canvas(preview_container, width=160, height=160, bg="#181825", highlightthickness=1, highlightbackground="#313244")
+        self.preview_canvas.pack(padx=5, pady=5)
+        
+        self.match_stats_lbl = ttk.Label(preview_container, text="Übereinstimmung: 0.0%", font=self.body_font, style='Card.TLabel', foreground="#a6adc8")
+        self.match_stats_lbl.pack(pady=2)
+        
+        self.gauge_canvas = tk.Canvas(preview_container, width=160, height=12, bg="#313244", highlightthickness=0)
+        self.gauge_canvas.pack(pady=5)
+
         
         col_controls = ttk.Frame(trigger_settings_card, style='Card.TFrame')
         col_controls.pack(fill="x", pady=(0, 5))
