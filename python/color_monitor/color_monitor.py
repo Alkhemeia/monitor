@@ -959,10 +959,8 @@ class ColorMonitorApp:
         self.start_btn.pack(side="left", ipady=4, padx=5)
         
         self.pause_btn = ttk.Button(btn_container, text="⏸️ Pause", style='Secondary.TButton', command=self.toggle_pause, state="disabled", width=15)
-        self.pause_btn.pack(side="left", ipady=4, padx=5)
         
         self.restart_btn = ttk.Button(btn_container, text="🔄 Neustart", style='Secondary.TButton', command=self.restart_monitoring, width=15)
-        self.restart_btn.pack(side="left", ipady=4, padx=5)
 
 
     def get_hex_color(self, rgb_tuple):
@@ -1654,7 +1652,9 @@ class ColorMonitorApp:
         self.monitoring_paused = False
         self.macro_paused = False
         self.macro_aborted = False
+        self.pause_btn.pack(side="left", ipady=4, padx=5)
         self.pause_btn.config(state="normal", text="⏸️ Pause", style='Secondary.TButton')
+        self.restart_btn.pack(side="left", ipady=4, padx=5)
         
         # Reset runtime states for each zone
         for zone in self.zones:
@@ -1689,6 +1689,8 @@ class ColorMonitorApp:
         self.macro_paused = False
         self.macro_aborted = True
         self.start_btn.config(text=self.t("start_monitoring_btn"), style='Primary.TButton')
+        self.pause_btn.pack_forget()
+        self.restart_btn.pack_forget()
         self.pause_btn.config(state="disabled", text="⏸️ Pause", style='Secondary.TButton')
         self.status_lbl.config(text=self.t("status_inactive"), fg="#7f849c")
         self.log_event(self.t("log_monitoring_stopped"))
