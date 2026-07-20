@@ -591,20 +591,13 @@ class ColorMonitorApp:
         subtitle_lbl = ttk.Label(header_frame, text="v2.1.0 (Dashboard)", font=self.code_font, foreground="#7f849c")
         subtitle_lbl.pack(side="right", pady=5)
 
-        # Columns splitting using a PanedWindow (user can drag the sash)
-        self.paned = ttk.Panedwindow(inner_container, orient="horizontal")
-        self.paned.pack(fill="both", expand=True)
-        
-        left_col = ttk.Frame(self.paned, style='TFrame', padding=(0, 0, 10, 0))
-        right_col = ttk.Frame(self.paned, style='TFrame', padding=(10, 0, 0, 0))
-        
-        self.paned.add(left_col, weight=1)
-        self.paned.add(right_col, weight=1)
+        # Single-column container
+        main_col = ttk.Frame(inner_container, style='TFrame')
 
-        # --- LEFT COLUMN WIDGETS ---
+        main_col.pack(fill="both", expand=True)
 
-        # Profile Manager
-        profile_card = ttk.Frame(left_col, style='Card.TFrame', padding=15)
+        # 1. Profile Manager
+        profile_card = ttk.Frame(main_col, style='Card.TFrame', padding=15)
         profile_card.pack(fill="x", pady=5)
         
         self.prof_title = ttk.Label(profile_card, text="Profil Manager", font=self.header_font, style='Card.TLabel')
@@ -630,54 +623,24 @@ class ColorMonitorApp:
         self.btn_del_prof = ttk.Button(prof_row2, text="Löschen", command=self.delete_profile_btn)
         self.btn_del_prof.pack(side="left", padx=4)
 
-        # Zonen Card
-        zones_card = ttk.Frame(left_col, style='Card.TFrame', padding=15)
-        zones_card.pack(fill="x", pady=5)
+        # 2. Live Preview card
+        preview_card = ttk.Frame(main_col, style='Card.TFrame', padding=15)
+        preview_card.pack(fill="x", pady=5)
         
-        self.zones_title = ttk.Label(zones_card, text="Zonen", font=self.header_font, style='Card.TLabel')
-        self.zones_title.pack(anchor="w", pady=(0, 10))
+        self.lbl_preview = ttk.Label(preview_card, text="Live-Vorschau", font=self.header_font, style='Card.TLabel')
+        self.lbl_preview.pack(anchor="n", pady=(0, 5))
         
-        zones_list_frame = ttk.Frame(zones_card, style='Card.TFrame')
-        zones_list_frame.pack(fill="x", pady=(0, 10))
+        self.preview_canvas = tk.Canvas(preview_card, width=160, height=160, bg="#181825", highlightthickness=1, highlightbackground="#313244")
+        self.preview_canvas.pack(padx=5, pady=5)
         
-        self.zones_listbox = tk.Listbox(zones_list_frame, bg="#11111b", fg="#cdd6f4", selectbackground="#313244", 
-                                        font=self.code_font, height=4, relief="flat", highlightthickness=0)
-        self.zones_listbox.pack(side="left", fill="x", expand=True)
-        self.zones_listbox.bind("<<ListboxSelect>>", self.on_zone_selected)
-        self.zones_listbox.bind("<Double-Button-1>", self.rename_zone)
+        self.match_stats_lbl = ttk.Label(preview_card, text="Übereinstimmung: 0.0%", font=self.body_font, style='Card.TLabel', foreground="#a6adc8")
+        self.match_stats_lbl.pack(pady=2)
         
-        scrollbar = ttk.Scrollbar(zones_list_frame, orient="vertical", command=self.zones_listbox.yview)
-        scrollbar.pack(side="right", fill="y")
-        self.zones_listbox.config(yscrollcommand=scrollbar.set)
-        
-        zones_btns = ttk.Frame(zones_card, style='Card.TFrame')
-        zones_btns.pack(fill="x")
-        
-        # Row 1 of buttons
-        zones_btns_r1 = ttk.Frame(zones_btns, style='Card.TFrame')
-        zones_btns_r1.pack(fill="x", pady=(0, 4))
-        
-        self.btn_add_zone = ttk.Button(zones_btns_r1, text="➕ Hinzufügen", width=12, command=self.add_zone)
-        self.btn_add_zone.pack(side="left", padx=(0, 4))
-        
-        self.btn_del_zone = ttk.Button(zones_btns_r1, text="❌ Löschen", width=12, command=self.delete_zone)
-        self.btn_del_zone.pack(side="left", padx=4)
-        
-        self.btn_rename_zone = ttk.Button(zones_btns_r1, text="✏️ Umbenennen", width=12, command=self.rename_zone)
-        self.btn_rename_zone.pack(side="left", padx=4)
-        
-        # Row 2 of buttons (Up / Down)
-        zones_btns_r2 = ttk.Frame(zones_btns, style='Card.TFrame')
-        zones_btns_r2.pack(fill="x")
-        
-        self.btn_zone_up = ttk.Button(zones_btns_r2, text="🔼 Nach oben", width=12, command=self.move_zone_up)
-        self.btn_zone_up.pack(side="left", padx=(0, 4))
-        
-        self.btn_zone_down = ttk.Button(zones_btns_r2, text="🔽 Nach unten", width=12, command=self.move_zone_down)
-        self.btn_zone_down.pack(side="left", padx=4)
+        self.gauge_canvas = tk.Canvas(preview_card, width=160, height=12, bg="#313244", highlightthickness=0)
+        self.gauge_canvas.pack(pady=5)
 
-        # Zonen auswählen Card
-        region_card = ttk.Frame(left_col, style='Card.TFrame', padding=15)
+        # 3. Zonen auswählen Card
+        region_card = ttk.Frame(main_col, style='Card.TFrame', padding=15)
         region_card.pack(fill="x", pady=5)
         
         self.reg_title = ttk.Label(region_card, text="Zonen auswählen", font=self.header_font, style='Card.TLabel')
@@ -723,87 +686,107 @@ class ColorMonitorApp:
         self.pixel_btn = ttk.Button(reg_row2, text="🎯 Pixel wählen", command=self.start_pixel_selection)
         self.pixel_btn.pack(side="left", padx=4)
 
-
-
-        # --- RIGHT COLUMN WIDGETS ---
-
-        # Live Preview card (top)
-        preview_card = ttk.Frame(right_col, style='Card.TFrame', padding=15)
-        preview_card.pack(fill="x", pady=5)
+        # 4. Zonen Card
+        zones_card = ttk.Frame(main_col, style='Card.TFrame', padding=15)
+        zones_card.pack(fill="x", pady=5)
         
-        self.lbl_preview = ttk.Label(preview_card, text="Live-Vorschau", font=self.header_font, style='Card.TLabel')
-        self.lbl_preview.pack(anchor="n", pady=(0, 5))
+        self.zones_title = ttk.Label(zones_card, text="Zonen", font=self.header_font, style='Card.TLabel')
+        self.zones_title.pack(anchor="w", pady=(0, 10))
         
-        self.preview_canvas = tk.Canvas(preview_card, width=160, height=160, bg="#181825", highlightthickness=1, highlightbackground="#313244")
-        self.preview_canvas.pack(padx=5, pady=5)
+        zones_list_frame = ttk.Frame(zones_card, style='Card.TFrame')
+        zones_list_frame.pack(fill="x", pady=(0, 10))
         
-        self.match_stats_lbl = ttk.Label(preview_card, text="Übereinstimmung: 0.0%", font=self.body_font, style='Card.TLabel', foreground="#a6adc8")
-        self.match_stats_lbl.pack(pady=2)
-
+        self.zones_listbox = tk.Listbox(zones_list_frame, bg="#11111b", fg="#cdd6f4", selectbackground="#313244", 
+                                        font=self.code_font, height=4, relief="flat", highlightthickness=0)
+        self.zones_listbox.pack(side="left", fill="x", expand=True)
+        self.zones_listbox.bind("<<ListboxSelect>>", self.on_zone_selected)
+        self.zones_listbox.bind("<Double-Button-1>", self.rename_zone)
         
-        self.gauge_canvas = tk.Canvas(preview_card, width=160, height=12, bg="#313244", highlightthickness=0)
-        self.gauge_canvas.pack(pady=5)
+        scrollbar = ttk.Scrollbar(zones_list_frame, orient="vertical", command=self.zones_listbox.yview)
+        scrollbar.pack(side="right", fill="y")
+        self.zones_listbox.config(yscrollcommand=scrollbar.set)
+        
+        zones_btns = ttk.Frame(zones_card, style='Card.TFrame')
+        zones_btns.pack(fill="x")
+        
+        # Row 1 of buttons
+        zones_btns_r1 = ttk.Frame(zones_btns, style='Card.TFrame')
+        zones_btns_r1.pack(fill="x", pady=(0, 4))
+        
+        self.btn_add_zone = ttk.Button(zones_btns_r1, text="➕ Hinzufügen", width=12, command=self.add_zone)
+        self.btn_add_zone.pack(side="left", padx=(0, 4))
+        
+        self.btn_del_zone = ttk.Button(zones_btns_r1, text="❌ Löschen", width=12, command=self.delete_zone)
+        self.btn_del_zone.pack(side="left", padx=4)
+        
+        self.btn_rename_zone = ttk.Button(zones_btns_r1, text="✏️ Umbenennen", width=12, command=self.rename_zone)
+        self.btn_rename_zone.pack(side="left", padx=4)
+        
+        # Row 2 of buttons (Up / Down)
+        zones_btns_r2 = ttk.Frame(zones_btns, style='Card.TFrame')
+        zones_btns_r2.pack(fill="x")
+        
+        self.btn_zone_up = ttk.Button(zones_btns_r2, text="🔼 Nach oben", width=12, command=self.move_zone_up)
+        self.btn_zone_up.pack(side="left", padx=(0, 4))
+        
+        self.btn_zone_down = ttk.Button(zones_btns_r2, text="🔽 Nach unten", width=12, command=self.move_zone_down)
+        self.btn_zone_down.pack(side="left", padx=4)
 
-
-
-        # Trigger Settings Card (Merged Target Color, Tolerance, and Trigger settings)
-        trigger_settings_card = ttk.Frame(right_col, style='Card.TFrame', padding=15)
+        # 5. Trigger Settings Card
+        trigger_settings_card = ttk.Frame(main_col, style='Card.TFrame', padding=15)
         trigger_settings_card.pack(fill="x", pady=5)
-
+        
         self.trig_title = ttk.Label(trigger_settings_card, text="Auslöser Einstellungen", font=self.header_font, style='Card.TLabel')
         self.trig_title.pack(anchor="w", pady=(0, 10))
-
-        # Color Controls Sub-Frame
+        
         col_controls = ttk.Frame(trigger_settings_card, style='Card.TFrame')
         col_controls.pack(fill="x", pady=(0, 5))
-
+        
         self.color_patch = tk.Canvas(col_controls, width=44, height=44, bg=self.get_hex_color(self.target_color), 
                                      highlightthickness=1, highlightbackground="#45475a", relief="flat")
         self.color_patch.pack(side="left", padx=(0, 10))
-
+        
         color_info_frame = ttk.Frame(col_controls, style='Card.TFrame')
         color_info_frame.pack(side="left", fill="y")
-
+        
         self.color_text_lbl = ttk.Label(color_info_frame, text=f"RGB: {self.target_color}\nHEX: {self.get_hex_color(self.target_color)}", 
                                         font=self.code_font, style='Card.TLabel')
         self.color_text_lbl.pack(anchor="w")
-
+        
         color_btns_frame = ttk.Frame(trigger_settings_card, style='Card.TFrame')
         color_btns_frame.pack(fill="x", pady=(5, 0))
-
+        
         self.color_pick_btn = ttk.Button(color_btns_frame, text="Farbpalette", command=self.choose_color_dialog)
         self.color_pick_btn.pack(side="left", padx=(0, 4))
-
+        
         self.eyedropper_btn = ttk.Button(color_btns_frame, text="Pipette (Bildschirm)", command=self.start_eyedropper)
         self.eyedropper_btn.pack(side="left", padx=4)
-
-        # Tolerance Slider Sub-Frame
+        
         tolerance_frame = ttk.Frame(trigger_settings_card, style='Card.TFrame')
         tolerance_frame.pack(fill="x", pady=(10, 10))
-
+        
         tol_lbl_container = ttk.Frame(tolerance_frame, style='Card.TFrame')
         tol_lbl_container.pack(fill="x")
-
+        
         self.tol_lbl = ttk.Label(tol_lbl_container, text="Farb-Toleranz (Abweichung):", font=self.body_font, style='Card.TLabel')
         self.tol_lbl.pack(side="left")
-
+        
         self.tolerance = tk.IntVar(value=30)
         self.tol_val_lbl = ttk.Label(tol_lbl_container, text=str(self.tolerance.get()), font=self.code_font, style='Card.TLabel', foreground="#a6e3a1")
         self.tol_val_lbl.pack(side="right")
-
+        
         tol_slider = tk.Scale(tolerance_frame, from_=0, to=255, variable=self.tolerance, orient="horizontal", 
                               bg="#181825", fg="#cdd6f4", highlightthickness=0, troughcolor="#313244", 
                               activebackground="#89b4fa", showvalue=False, command=self.on_tolerance_change)
         tol_slider.pack(fill="x", pady=(5, 0))
         tol_slider.bind("<ButtonRelease-1>", lambda e: self.save_config())
-
-        # Trigger Grid (Mode, Interval, Min Area, Active)
+        
         trig_grid = ttk.Frame(trigger_settings_card, style='Card.TFrame')
         trig_grid.pack(fill="x", pady=(10, 0))
-
+        
         self.mode_lbl = ttk.Label(trig_grid, text="Auslöser-Modus:", font=self.body_font, style='Card.TLabel')
         self.mode_lbl.grid(row=0, column=0, sticky="w", pady=5, padx=(0, 10))
-
+        
         self.mode = tk.StringVar(value="Ziel-Farbe erscheint")
         self.mode_cb = ttk.Combobox(trig_grid, textvariable=self.mode, values=[
             "Ziel-Farbe erscheint", 
@@ -814,58 +797,57 @@ class ColorMonitorApp:
         ], state="readonly", width=22, style='Combobox.TCombobox')
         self.mode_cb.grid(row=0, column=1, sticky="w", pady=5)
         self.mode_cb.bind("<<ComboboxSelected>>", self.on_mode_change)
-
+        
         self.interval_lbl = ttk.Label(trig_grid, text="Prüf-Intervall (Sek.):", font=self.body_font, style='Card.TLabel')
         self.interval_lbl.grid(row=1, column=0, sticky="w", pady=10, padx=(0, 10))
-
+        
         interval_slider_frame = ttk.Frame(trig_grid, style='Card.TFrame')
         interval_slider_frame.grid(row=1, column=1, sticky="ew")
-
+        
         self.interval = tk.DoubleVar(value=0.5)
         self.interval_val_lbl = ttk.Label(interval_slider_frame, text=f"{self.interval.get():.1f} s", font=self.code_font, style='Card.TLabel', foreground="#a6e3a1")
         self.interval_val_lbl.pack(side="right", padx=(10, 0))
-
+        
         interval_slider = tk.Scale(interval_slider_frame, from_=0.1, to=5.0, resolution=0.1, variable=self.interval, orient="horizontal",
                                    bg="#181825", fg="#cdd6f4", highlightthickness=0, troughcolor="#313244", 
                                    activebackground="#89b4fa", showvalue=False, command=self.on_interval_change, width=12)
         interval_slider.pack(side="left", fill="x", expand=True)
         interval_slider.bind("<ButtonRelease-1>", lambda e: self.save_config())
-
+        
         self.min_area_lbl = ttk.Label(trig_grid, text="Mindest-Fläche (%):", font=self.body_font, style='Card.TLabel')
         self.min_area_lbl.grid(row=2, column=0, sticky="w", pady=10, padx=(0, 10))
-
+        
         self.min_area_frame = ttk.Frame(trig_grid, style='Card.TFrame')
         self.min_area_frame.grid(row=2, column=1, sticky="ew")
-
+        
         self.min_area_pct = tk.DoubleVar(value=1.0)
         self.min_area_val_lbl = ttk.Label(self.min_area_frame, text=f"{self.min_area_pct.get():.1f}%", font=self.code_font, style='Card.TLabel', foreground="#a6e3a1")
         self.min_area_val_lbl.pack(side="right", padx=(10, 0))
-
+        
         self.min_area_slider = tk.Scale(self.min_area_frame, from_=0.0, to=100.0, resolution=0.1, variable=self.min_area_pct, orient="horizontal",
                                         bg="#181825", fg="#cdd6f4", highlightthickness=0, troughcolor="#313244", 
                                         activebackground="#89b4fa", showvalue=False, command=self.on_min_area_change, width=12)
         self.min_area_slider.pack(side="left", fill="x", expand=True)
         self.min_area_slider.bind("<ButtonRelease-1>", lambda e: self.save_config())
-
+        
         self.zone_active_lbl = ttk.Label(trig_grid, text=self.t("active") + ":", font=self.body_font, style='Card.TLabel')
         self.zone_active_lbl.grid(row=3, column=0, sticky="w", pady=10, padx=(0, 10))
-
+        
         self.zone_active_var = tk.BooleanVar(value=True)
         self.zone_active_cb = tk.Checkbutton(trig_grid, variable=self.zone_active_var, bg="#181825", fg="#cdd6f4",
                                              activebackground="#181825", activeforeground="#cdd6f4", selectcolor="#313244",
                                              command=self.on_zone_active_changed)
         self.zone_active_cb.grid(row=3, column=1, sticky="w", pady=10)
-
+        
         trig_grid.columnconfigure(1, weight=1)
 
-        # Automatisierungs-Makro bei Alarm
-        macro_card = ttk.Frame(right_col, style='Card.TFrame', padding=15)
+        # 6. Automatisierungs-Makro bei Alarm
+        macro_card = ttk.Frame(main_col, style='Card.TFrame', padding=15)
         macro_card.pack(fill="x", pady=5)
         
         self.mac_title = ttk.Label(macro_card, text="Ausgelöstes Makro", font=self.header_font, style='Card.TLabel')
         self.mac_title.pack(anchor="w", pady=(0, 10))
         
-        # Listbox with Scrollbar
         list_frame = ttk.Frame(macro_card, style='Card.TFrame')
         list_frame.pack(fill="x", pady=(0, 10))
         
@@ -878,7 +860,6 @@ class ColorMonitorApp:
         scrollbar.pack(side="right", fill="y")
         self.macro_listbox.config(yscrollcommand=scrollbar.set)
         
-        # Action Edit Buttons underneath the listbox
         btns_frame = ttk.Frame(macro_card, style='Card.TFrame')
         btns_frame.pack(fill="x")
         
@@ -900,8 +881,8 @@ class ColorMonitorApp:
         self.btn_test_mac = ttk.Button(row2, text="▶️ Makro testen", width=16, style='Primary.TButton', command=self.test_macro)
         self.btn_test_mac.pack(side="left", padx=4)
 
-        # Activity Log Card (bottom of right column)
-        log_card = ttk.Frame(right_col, style='Card.TFrame', padding=15)
+        # 7. Activity Log Card
+        log_card = ttk.Frame(main_col, style='Card.TFrame', padding=15)
         log_card.pack(fill="both", expand=True, pady=5)
         
         log_header_frame = ttk.Frame(log_card, style='Card.TFrame')
@@ -943,8 +924,8 @@ class ColorMonitorApp:
             
         self.log_list.bind("<Button-3>", show_log_context)
 
-        # Large Action Trigger Buttons (at the very bottom of right column)
-        control_frame = ttk.Frame(right_col, style='Card.TFrame', padding=10)
+        # 8. Large Action Trigger Buttons (at the very bottom of main column)
+        control_frame = ttk.Frame(main_col, style='Card.TFrame', padding=10)
         control_frame.pack(fill="x", pady=5)
         
         self.start_btn = ttk.Button(control_frame, text="▶️ Starten", style='Primary.TButton', command=self.toggle_monitoring)
@@ -955,6 +936,7 @@ class ColorMonitorApp:
         
         self.restart_btn = ttk.Button(control_frame, text="🔄 Neustart", style='Secondary.TButton', command=self.restart_monitoring)
         self.restart_btn.pack(side="left", fill="x", expand=True, ipady=4, padx=(2, 0))
+
 
     def get_hex_color(self, rgb_tuple):
         return f"#{rgb_tuple[0]:02x}{rgb_tuple[1]:02x}{rgb_tuple[2]:02x}"
