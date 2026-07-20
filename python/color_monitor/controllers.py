@@ -2,6 +2,10 @@ import time
 import sys
 import ctypes
 from ctypes.util import find_library
+import tkinter as tk
+from tkinter import messagebox
+import numpy as np
+from PIL import ImageGrab, ImageTk, Image
 CLICK_TYPE_MAP = {
     "left": "Linksklick",
     "right": "Rechtsklick",
