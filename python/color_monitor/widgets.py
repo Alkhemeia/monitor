@@ -79,13 +79,19 @@ class ActionDialog:
                                          activeforeground=self.fg_light, selectcolor=self.bg_card)
         self.cb_enabled.pack(side="right", padx=(10, 0))
         
-        # Dynamic Options Frame
-        self.options_frame = tk.Frame(container, bg=self.bg_card, bd=1, relief="solid", highlightthickness=0)
-        self.options_frame.pack(fill="both", expand=True, pady=15, padx=2)
+        # Bottom Buttons
+        btn_frame = tk.Frame(container, bg=self.bg_dark)
+        btn_frame.pack(fill="x", side="bottom", pady=(10, 0))
+        
+        btn_cancel = ttk.Button(btn_frame, text=self.app.t("action_cancel"), command=self.close)
+        btn_cancel.pack(side="left", padx=5)
+        
+        btn_save = ttk.Button(btn_frame, text=self.app.t("action_save"), style='Primary.TButton', command=self.save)
+        btn_save.pack(side="right", padx=5)
         
         # Comment Input Frame
         comment_frame = tk.Frame(container, bg=self.bg_dark)
-        comment_frame.pack(fill="x", side="bottom", pady=(0, 10))
+        comment_frame.pack(fill="x", side="bottom", pady=(5, 5))
         
         lbl_comment = tk.Label(comment_frame, text="Kommentar:", font=("Helvetica", 10), fg=self.fg_light, bg=self.bg_dark)
         lbl_comment.pack(side="left", padx=(0, 10))
@@ -95,18 +101,12 @@ class ActionDialog:
             self.comment_val.set(action_data.get("comment", ""))
             
         self.comment_ent = tk.Entry(comment_frame, textvariable=self.comment_val, font=("Helvetica", 10), 
-                                    bg=self.bg_card, fg=self.fg_light, relief="flat", insertbackground=self.fg_light, bd=2)
+                                    bg="#313244", fg=self.fg_light, relief="flat", insertbackground=self.fg_light, bd=2)
         self.comment_ent.pack(side="left", fill="x", expand=True)
 
-        # Bottom Buttons
-        btn_frame = tk.Frame(container, bg=self.bg_dark)
-        btn_frame.pack(fill="x", side="bottom")
-        
-        btn_cancel = ttk.Button(btn_frame, text=self.app.t("action_cancel"), command=self.close)
-        btn_cancel.pack(side="left", padx=5)
-        
-        btn_save = ttk.Button(btn_frame, text=self.app.t("action_save"), style='Primary.TButton', command=self.save)
-        btn_save.pack(side="right", padx=5)
+        # Dynamic Options Frame
+        self.options_frame = tk.Frame(container, bg=self.bg_card, bd=1, relief="solid", highlightthickness=0)
+        self.options_frame.pack(fill="both", expand=True, pady=(0, 10), padx=2)
         
         # Values
         self.wait_ms = tk.StringVar(value="500")
