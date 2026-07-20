@@ -1791,16 +1791,25 @@ class ColorMonitorApp:
     def edit_action(self, event=None):
         if event:
             idx = self.macro_listbox.nearest(event.y)
+            bbox = self.macro_listbox.bbox(idx)
+            if bbox:
+                y_min = bbox[1]
+                y_max = bbox[1] + bbox[3]
+                if not (y_min <= event.y <= y_max):
+                    return "break"
             if idx >= 0 and idx < len(self.macro_actions):
                 self.macro_listbox.selection_clear(0, "end")
                 self.macro_listbox.selection_set(idx)
                 self.macro_listbox.activate(idx)
+            else:
+                return "break"
         selected_idx = self.macro_listbox.curselection()
         if not selected_idx:
             messagebox.showinfo("Info", self.t("action_select_action_first"), parent=self.root)
-            return
+            return "break" if event else None
         idx = selected_idx[0]
         ActionDialog(self, lambda act: self.on_action_saved(act, idx), self.macro_actions[idx])
+        return "break" if event else None
 
     def on_action_saved(self, action, idx=None):
         if idx is None:
