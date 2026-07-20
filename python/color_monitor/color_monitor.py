@@ -723,83 +723,25 @@ class ColorMonitorApp:
         self.pixel_btn = ttk.Button(reg_row2, text="🎯 Pixel wählen", command=self.start_pixel_selection)
         self.pixel_btn.pack(side="left", padx=4)
 
-        # Large Action Trigger Buttons in left column bottom
-        control_frame = ttk.Frame(left_col, style='Card.TFrame')
-        control_frame.pack(fill="x", pady=12)
-        
-        self.start_btn = ttk.Button(control_frame, text="▶️ Starten", style='Primary.TButton', command=self.toggle_monitoring)
-        self.start_btn.pack(side="left", fill="x", expand=True, ipady=4, padx=(0, 2))
-        
-        self.pause_btn = ttk.Button(control_frame, text="⏸️ Pause", style='Secondary.TButton', command=self.toggle_pause, state="disabled")
-        self.pause_btn.pack(side="left", fill="x", expand=True, ipady=4, padx=(2, 2))
-        
-        self.restart_btn = ttk.Button(control_frame, text="🔄 Neustart", style='Secondary.TButton', command=self.restart_monitoring)
-        self.restart_btn.pack(side="left", fill="x", expand=True, ipady=4, padx=(2, 0))
 
 
         # --- RIGHT COLUMN WIDGETS ---
 
-        # Live Preview & Logs card
-        outputs_card = ttk.Frame(right_col, style='Card.TFrame', padding=15)
-        outputs_card.pack(fill="both", expand=True, pady=5)
+        # Live Preview card (top)
+        preview_card = ttk.Frame(right_col, style='Card.TFrame', padding=15)
+        preview_card.pack(fill="x", pady=5)
         
-        # Log panel (top)
-        log_panel = ttk.Frame(outputs_card, style='Card.TFrame')
-        log_panel.pack(side="top", fill="both", expand=True, pady=(0, 10))
-        
-        log_header_frame = ttk.Frame(log_panel, style='Card.TFrame')
-        log_header_frame.pack(fill="x", pady=(0, 5))
-        
-        self.lbl_log = ttk.Label(log_header_frame, text="Aktivitätsprotokoll", font=self.header_font, style='Card.TLabel')
-        self.lbl_log.pack(side="left", anchor="w")
-        
-        self.btn_copy_log = ttk.Button(log_header_frame, text="Kopieren", style='TButton', command=self.copy_all_logs, width=8)
-        self.btn_copy_log.pack(side="right")
-        
-        log_list_frame = ttk.Frame(log_panel, style='Card.TFrame')
-        log_list_frame.pack(fill="both", expand=True)
-        
-        scrollbar_y = ttk.Scrollbar(log_list_frame, orient="vertical")
-        scrollbar_x = ttk.Scrollbar(log_list_frame, orient="horizontal")
-        
-        self.log_list = tk.Listbox(log_list_frame, bg="#11111b", fg="#cdd6f4", selectbackground="#313244", 
-                                   font=self.code_font, height=8, relief="flat", highlightthickness=0,
-                                   yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set,
-                                   selectmode="extended")
-        
-        scrollbar_y.config(command=self.log_list.yview)
-        scrollbar_x.config(command=self.log_list.xview)
-        
-        scrollbar_y.pack(side="right", fill="y")
-        scrollbar_x.pack(side="bottom", fill="x")
-        self.log_list.pack(side="left", fill="both", expand=True)
-        
-        self.log_list.bind("<Control-c>", self.copy_selected_log)
-        self.log_list.bind("<Control-C>", self.copy_selected_log)
-        
-        self.log_context_menu = tk.Menu(self.root, tearoff=0, bg="#181825", fg="#cdd6f4", activebackground="#313244", activeforeground="#cdd6f4", relief="flat")
-        self.log_context_menu.add_command(label="Kopieren (Auswahl)", command=self.copy_selected_log)
-        self.log_context_menu.add_command(label="Alles kopieren", command=self.copy_all_logs)
-        
-        def show_log_context(event):
-            self.log_context_menu.post(event.x_root, event.y_root)
-            
-        self.log_list.bind("<Button-3>", show_log_context)
-
-        # Live Preview (bottom)
-        preview_panel = ttk.Frame(outputs_card, style='Card.TFrame')
-        preview_panel.pack(side="bottom", fill="x", pady=(5, 0))
-        
-        self.lbl_preview = ttk.Label(preview_panel, text="Live-Vorschau", font=self.header_font, style='Card.TLabel')
+        self.lbl_preview = ttk.Label(preview_card, text="Live-Vorschau", font=self.header_font, style='Card.TLabel')
         self.lbl_preview.pack(anchor="n", pady=(0, 5))
         
-        self.preview_canvas = tk.Canvas(preview_panel, width=160, height=160, bg="#181825", highlightthickness=1, highlightbackground="#313244")
+        self.preview_canvas = tk.Canvas(preview_card, width=160, height=160, bg="#181825", highlightthickness=1, highlightbackground="#313244")
         self.preview_canvas.pack(padx=5, pady=5)
         
-        self.match_stats_lbl = ttk.Label(preview_panel, text="Übereinstimmung: 0.0%", font=self.body_font, style='Card.TLabel', foreground="#a6adc8")
+        self.match_stats_lbl = ttk.Label(preview_card, text="Übereinstimmung: 0.0%", font=self.body_font, style='Card.TLabel', foreground="#a6adc8")
         self.match_stats_lbl.pack(pady=2)
+
         
-        self.gauge_canvas = tk.Canvas(preview_panel, width=160, height=12, bg="#313244", highlightthickness=0)
+        self.gauge_canvas = tk.Canvas(preview_card, width=160, height=12, bg="#313244", highlightthickness=0)
         self.gauge_canvas.pack(pady=5)
 
 
@@ -957,6 +899,62 @@ class ColorMonitorApp:
         self.btn_down_mac.pack(side="left", padx=4)
         self.btn_test_mac = ttk.Button(row2, text="▶️ Makro testen", width=16, style='Primary.TButton', command=self.test_macro)
         self.btn_test_mac.pack(side="left", padx=4)
+
+        # Activity Log Card (bottom of right column)
+        log_card = ttk.Frame(right_col, style='Card.TFrame', padding=15)
+        log_card.pack(fill="both", expand=True, pady=5)
+        
+        log_header_frame = ttk.Frame(log_card, style='Card.TFrame')
+        log_header_frame.pack(fill="x", pady=(0, 5))
+        
+        self.lbl_log = ttk.Label(log_header_frame, text="Aktivitätsprotokoll", font=self.header_font, style='Card.TLabel')
+        self.lbl_log.pack(side="left", anchor="w")
+        
+        self.btn_copy_log = ttk.Button(log_header_frame, text="Kopieren", style='TButton', command=self.copy_all_logs, width=8)
+        self.btn_copy_log.pack(side="right")
+        
+        log_list_frame = ttk.Frame(log_card, style='Card.TFrame')
+        log_list_frame.pack(fill="both", expand=True)
+        
+        scrollbar_y = ttk.Scrollbar(log_list_frame, orient="vertical")
+        scrollbar_x = ttk.Scrollbar(log_list_frame, orient="horizontal")
+        
+        self.log_list = tk.Listbox(log_list_frame, bg="#11111b", fg="#cdd6f4", selectbackground="#313244", 
+                                   font=self.code_font, height=6, relief="flat", highlightthickness=0,
+                                   yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set,
+                                   selectmode="extended")
+        
+        scrollbar_y.config(command=self.log_list.yview)
+        scrollbar_x.config(command=self.log_list.xview)
+        
+        scrollbar_y.pack(side="right", fill="y")
+        scrollbar_x.pack(side="bottom", fill="x")
+        self.log_list.pack(side="left", fill="both", expand=True)
+        
+        self.log_list.bind("<Control-c>", self.copy_selected_log)
+        self.log_list.bind("<Control-C>", self.copy_selected_log)
+        
+        self.log_context_menu = tk.Menu(self.root, tearoff=0, bg="#181825", fg="#cdd6f4", activebackground="#313244", activeforeground="#cdd6f4", relief="flat")
+        self.log_context_menu.add_command(label="Kopieren (Auswahl)", command=self.copy_selected_log)
+        self.log_context_menu.add_command(label="Alles kopieren", command=self.copy_all_logs)
+        
+        def show_log_context(event):
+            self.log_context_menu.post(event.x_root, event.y_root)
+            
+        self.log_list.bind("<Button-3>", show_log_context)
+
+        # Large Action Trigger Buttons (at the very bottom of right column)
+        control_frame = ttk.Frame(right_col, style='Card.TFrame', padding=10)
+        control_frame.pack(fill="x", pady=5)
+        
+        self.start_btn = ttk.Button(control_frame, text="▶️ Starten", style='Primary.TButton', command=self.toggle_monitoring)
+        self.start_btn.pack(side="left", fill="x", expand=True, ipady=4, padx=(0, 2))
+        
+        self.pause_btn = ttk.Button(control_frame, text="⏸️ Pause", style='Secondary.TButton', command=self.toggle_pause, state="disabled")
+        self.pause_btn.pack(side="left", fill="x", expand=True, ipady=4, padx=(2, 2))
+        
+        self.restart_btn = ttk.Button(control_frame, text="🔄 Neustart", style='Secondary.TButton', command=self.restart_monitoring)
+        self.restart_btn.pack(side="left", fill="x", expand=True, ipady=4, padx=(2, 0))
 
     def get_hex_color(self, rgb_tuple):
         return f"#{rgb_tuple[0]:02x}{rgb_tuple[1]:02x}{rgb_tuple[2]:02x}"
