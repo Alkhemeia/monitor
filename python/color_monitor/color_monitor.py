@@ -732,7 +732,7 @@ class ColorMonitorApp:
         card_left.pack(side="left", fill="y", padx=(0, 15))
         
         card_right = ttk.Frame(card_content, style='Card.TFrame')
-        card_right.pack(side="right", fill="y", padx=(15, 0), anchor="n")
+        card_right.pack(side="left", fill="y", padx=(15, 0), anchor="n")
         
         # Live Preview (right side)
         self.lbl_preview = ttk.Label(card_right, text="Live-Vorschau", font=self.header_font, style='Card.TLabel')
