@@ -955,7 +955,7 @@ class ColorMonitorApp:
         btn_container = ttk.Frame(control_frame, style='Card.TFrame')
         btn_container.pack(anchor="center")
         
-        self.start_btn = ttk.Button(btn_container, text="▶️ Starten", style='Primary.TButton', command=self.toggle_monitoring, width=15)
+        self.start_btn = ttk.Button(btn_container, text=self.t("start_monitoring_btn"), style='Primary.TButton', command=self.toggle_monitoring, width=15)
         self.start_btn.pack(side="left", ipady=4, padx=5)
         
         self.pause_btn = ttk.Button(btn_container, text="⏸️ Pause", style='Secondary.TButton', command=self.toggle_pause, state="disabled", width=15)
@@ -1677,7 +1677,7 @@ class ColorMonitorApp:
                     self.is_monitoring = False
                     return
                     
-        self.start_btn.config(text="⏹️ Stoppen", style='TButton')
+        self.start_btn.config(text=self.t("stop_monitoring_btn"), style='TButton')
         self.status_lbl.config(text=self.t("status_active"), fg="#a6e3a1")
         self.log_event(self.t("log_monitoring_started", len(self.zones)))
         
@@ -1688,7 +1688,7 @@ class ColorMonitorApp:
         self.monitoring_paused = False
         self.macro_paused = False
         self.macro_aborted = True
-        self.start_btn.config(text="▶️ Starten", style='Primary.TButton')
+        self.start_btn.config(text=self.t("start_monitoring_btn"), style='Primary.TButton')
         self.pause_btn.config(state="disabled", text="⏸️ Pause", style='Secondary.TButton')
         self.status_lbl.config(text=self.t("status_inactive"), fg="#7f849c")
         self.log_event(self.t("log_monitoring_stopped"))
