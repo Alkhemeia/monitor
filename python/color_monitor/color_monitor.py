@@ -727,11 +727,15 @@ class ColorMonitorApp:
         control_frame = ttk.Frame(left_col, style='Card.TFrame')
         control_frame.pack(fill="x", pady=12)
         
-        self.start_btn = ttk.Button(control_frame, text="▶️ Überwachung STARTEN", style='Primary.TButton', command=self.toggle_monitoring)
-        self.start_btn.pack(side="left", fill="x", expand=True, ipady=4, padx=(0, 4))
+        self.start_btn = ttk.Button(control_frame, text="▶️ Starten", style='Primary.TButton', command=self.toggle_monitoring)
+        self.start_btn.pack(side="left", fill="x", expand=True, ipady=4, padx=(0, 2))
         
         self.pause_btn = ttk.Button(control_frame, text="⏸️ Pause", style='Secondary.TButton', command=self.toggle_pause, state="disabled")
-        self.pause_btn.pack(side="left", fill="x", expand=True, ipady=4, padx=(4, 0))
+        self.pause_btn.pack(side="left", fill="x", expand=True, ipady=4, padx=(2, 2))
+        
+        self.restart_btn = ttk.Button(control_frame, text="🔄 Neustart", style='Secondary.TButton', command=self.restart_monitoring)
+        self.restart_btn.pack(side="left", fill="x", expand=True, ipady=4, padx=(2, 0))
+
 
         # --- RIGHT COLUMN WIDGETS ---
 
@@ -1666,7 +1670,7 @@ class ColorMonitorApp:
                     self.is_monitoring = False
                     return
                     
-        self.start_btn.config(text="⏹️ Überwachung STOPPEN", style='TButton')
+        self.start_btn.config(text="⏹️ Stoppen", style='TButton')
         self.status_lbl.config(text=self.t("status_active"), fg="#a6e3a1")
         self.log_event(self.t("log_monitoring_started", len(self.zones)))
         
@@ -1677,10 +1681,18 @@ class ColorMonitorApp:
         self.monitoring_paused = False
         self.macro_paused = False
         self.macro_aborted = True
-        self.start_btn.config(text="▶️ Überwachung STARTEN", style='Primary.TButton')
+        self.start_btn.config(text="▶️ Starten", style='Primary.TButton')
         self.pause_btn.config(state="disabled", text="⏸️ Pause", style='Secondary.TButton')
         self.status_lbl.config(text=self.t("status_inactive"), fg="#7f849c")
         self.log_event(self.t("log_monitoring_stopped"))
+
+    def restart_monitoring(self):
+        if self.is_monitoring:
+            self.stop_monitoring()
+            self.root.after(100, self.start_monitoring)
+        else:
+            self.start_monitoring()
+
 
     def check_loop(self):
         if not self.is_monitoring:
